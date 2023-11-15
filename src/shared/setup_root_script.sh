@@ -28,8 +28,31 @@ script_root_filename_without_ext=$(basename "${0%.*}")
 # エラーハンドリング
 # https://zenn.dev/liqsuq/articles/99acdab5b02ff5
 # https://nikkie-ftnext.hatenablog.com/entry/set-e-and-trap-are-enough-no-need-exit
+# https://gist.github.com/akostadinov/33bb2606afe1b334169dfbf202991d36?permalink_comment_id=4726328#gistcomment-4726328
 function on_error() {
-    echo "${red}$(date +"%Y/%m/%d %H:%M:%S") [ERROR] ${BASH_SOURCE[1]}:${BASH_LINENO} - '${BASH_COMMAND}'${reset}">&2
+    # echo "${red}$(date +"%Y/%m/%d %H:%M:%S") [ERROR] ${BASH_SOURCE[1]}:${BASH_LINENO} - '${BASH_COMMAND}'${reset}">&2
+
+
+    local err_command=${BASH_COMMAND}
+
+    local -a stack=("")
+    local stack_size=${#FUNCNAME[@]}
+    local -i i
+    # {
+    #   i = 1
+    #   local func="${FUNCNAME[$i]:-(top level)}"
+    #   local -i line="${BASH_LINENO[$(( i - 1 ))]}"
+    #   local src="${BASH_SOURCE[$i]:-(no file)}"
+
+    # }
+    # stack+=("Stack trace:")
+    for (( i = 1; i < stack_size; i++ )); do
+      local func="${FUNCNAME[$i]:-(top level)}"
+      local -i line="${BASH_LINENO[$(( i - 1 ))]}"
+      local src="${BASH_SOURCE[$i]:-(no file)}"
+      stack+=("  at $func $src:$line")
+    done
+    (IFS=$'\n'; echo "${red}$(date +"%Y/%m/%d %H:%M:%S") [ERROR] ${err_command}${stack[*]}${reset}")
 }
 trap on_error ERR
 
@@ -133,9 +156,16 @@ function remove_temp_dir() {
   fi
 }
 
-# 一時フォルダを作成していた場合は終了時に削除
-trap remove_temp_dir EXIT
 
 
 
 
+
+
+function call_task() {
+    local task_name=$1
+    info "${task_name} タスクの実行を開始しました。"
+    task_path=./tasks/${task_name}/main.sh
+    source ${task_path}
+    success "${task_name} タスクの実行が完了しました。"
+}
