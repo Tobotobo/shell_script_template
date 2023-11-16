@@ -1,3 +1,6 @@
-echo "Hello World!1"
+log "${script_this_fullname}"
+log "Hello World!1"
 false
-echo "Hello World!2"
+# read ans
+log "${user_name}"
+log "Hello World!2"
