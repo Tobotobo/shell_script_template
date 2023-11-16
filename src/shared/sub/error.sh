@@ -5,14 +5,20 @@
 set -eEuo pipefail
 shopt -s inherit_errexit # '-e'オプションをサブシェルや関数内にも適用する
 
+raised_err_msg=""
+
 # エラーハンドリング
-# https://zenn.dev/liqsuq/articles/99acdab5b02ff5
-# https://nikkie-ftnext.hatenablog.com/entry/set-e-and-trap-are-enough-no-need-exit
 # https://gist.github.com/akostadinov/33bb2606afe1b334169dfbf202991d36?permalink_comment_id=4726328#gistcomment-4726328
 function on_error() {
     exit_status=ERR
 
-    local err_command=${BASH_COMMAND}
+    local err_command
+    if [[ $raised_err_msg == "" ]]; then
+      err_command=${BASH_COMMAND}
+    else
+      err_command=${raised_err_msg}
+    fi
+
     local -a stack=("")
     local stack_size=${#FUNCNAME[@]}
     local -i i
@@ -33,17 +39,10 @@ function disable_on_error() {
   trap - ERR
 }
 
-
-
 # エラーを発生させる　※例）raise 〇〇の処理に失敗しました。
 function raise() {
-  error "$1">&2
-  # echo "${red}$(date +"%Y/%m/%d %H:%M:%S") [ERROR] $1${reset}">&2
+  raised_err_msg=$1
   return 1
-}
-
-function has_error() {
-  return 0
 }
 
 #######################################################################

@@ -25,12 +25,12 @@ function success() {
 
 # エラーメッセージを表示する
 function error() {
-  echo "${red}$(date +"%Y/%m/%d %H:%M:%S") [ERROR] $1${reset}"
+  echo "${red}$(date +"%Y/%m/%d %H:%M:%S") [ERROR] $1${reset}">&2
 }
 
 # 失敗メッセージを表示する　※表示のみでエラーは発生させない
 function ng() {
-  echo "${red}$(date +"%Y/%m/%d %H:%M:%S") [NG] $1${reset}"
+  echo "${red}$(date +"%Y/%m/%d %H:%M:%S") [NG] $1${reset}">&2
 }
 
 

@@ -86,6 +86,3 @@ function on_sigterm() {
   exit 0
 }
 trap on_sigterm SIGTERM
-
-
-
