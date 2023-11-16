@@ -12,10 +12,8 @@ raised_err_msg=""
 function on_error() {
     exit_status=ERR
 
-    local err_command
-    if [[ $raised_err_msg == "" ]]; then
-      err_command=${BASH_COMMAND}
-    else
+    local err_command=${BASH_COMMAND}
+    if [[ $raised_err_msg != "" ]]; then
       err_command=${raised_err_msg}
     fi
 
